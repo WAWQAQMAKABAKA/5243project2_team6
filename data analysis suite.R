@@ -20,7 +20,7 @@ ui <- navbarPage(
   tabPanel("Welcome",
            fluidPage(
              h1("Data Analysis Suite", class = "display-4"),
-             p("Welcome to the enhanced version of the Data Analysis Suite. 
+             p("Welcome to the Data Analysis Suite. 
                This application allows you to upload and explore datasets, 
                preprocess and clean them (including outlier handling), 
                engineer new features, and perform interactive data analysis 
