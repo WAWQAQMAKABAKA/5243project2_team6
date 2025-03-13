@@ -5,229 +5,219 @@ library(shinythemes)
 library(corrplot)
 library(palmerpenguins)
 library(data.table)
+library(readxl)
+library(jsonlite)
 
-#max file upload size to 1GB
-options(shiny.maxRequestSize = 1024 * 1024^2)  # 1024MB = 1GB
+# Max upload size to 1GB
+options(shiny.maxRequestSize = 1024 * 1024^2)
 
 ui <- navbarPage(
   title = "Data Analysis Suite",
   id = "nav",
   theme = shinythemes::shinytheme("flatly"),
-  
-  # Welcome Page
-  # could make this more dynamic, but here is what i have so far
-  # briefly explain the app
+
   tabPanel("Welcome",
-           div(class = "jumbotron",
-               h1("Data Analysis Suite", class = "display-4"),
-               p("DESCRIPTION PLACE HOLDER", class = "lead"),
-               hr(class = "my-4"),
-               h3("Key Features:"),
-               tags$ul(
-                 tags$li("Fast data loading (up to 1GB)"),
-                 tags$li("Preprocessing & cleaning tools"),
-                 tags$li("Dynamic visualizations"),
-                 tags$li("Multiple file format support")
-               ),
-               h3("Contributors:"),
-               p("Ziyue Gao, Keito Taketomi, Anqi Wu, Yixin Xiao."),
-               h3("License:"),
-               p("MIT License | © 2024 Data Analytics Inc.")
-           )
+    div(class = "jumbotron",
+        h1("Data Analysis Suite", class = "display-4"),
+        p("This app provides an interactive data analysis pipeline including uploading, cleaning, visualization, and feature engineering.", class = "lead"),
+        hr(),
+        h3("Key Features:"),
+        tags$ul(
+          tags$li("Support for multiple file formats (CSV, Excel, JSON, RDS)"),
+          tags$li("Data preprocessing and cleaning tools"),
+          tags$li("Dynamic data visualizations including correlation matrix"),
+          tags$li("Feature engineering tools for modeling"),
+          tags$li("Downloadable plots")
+        ),
+        h3("Contributors:"),
+        p("Ziyue Gao, Keito Taketomi, Anqi Wu, Yixin Xiao")
+    )
   ),
-  
-  # data upload
-  # support multiple format
-  # have built in dataset
-  
+
   tabPanel("Data Upload",
-           sidebarLayout(
-             sidebarPanel(
-               h4("Data Source Selection"),
-               radioButtons("data_source", "Choose Input Method:",
-                            choices = c("Upload File" = "upload",
-                                        "Use Example Dataset" = "example"),
-                            selected = "upload"),
-               
-               conditionalPanel(
-                 condition = "input.data_source == 'upload'",
-                 fileInput("file_upload", "Choose File:",
-                           accept = c(".csv", ".xls", ".xlsx", ".json", ".rds")),
-                 helpText("Max file size: 1GB")
-               ),
-               
-               conditionalPanel(
-                 condition = "input.data_source == 'example'",
-                 selectInput("example_data", "Select Example Dataset:",
-                             choices = c("Iris" = "iris",
-                                         "Motor Trends Cars" = "mtcars",
-                                         "Penguins" = "penguins"))
-               )
-             ),
-             
-             mainPanel(
-               h3("Data Preview"),
-               DTOutput("data_preview"),
-               uiOutput("dataset_info")
-             )
-           )
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons("data_source", "Choose Data Source:",
+                     choices = c("Upload File" = "upload", "Use Example Dataset" = "example")),
+        conditionalPanel(
+          condition = "input.data_source == 'upload'",
+          fileInput("file_upload", "Choose File:",
+                    accept = c(".csv", ".xls", ".xlsx", ".json", ".rds")),
+          helpText("Max file size: 1GB")
+        ),
+        conditionalPanel(
+          condition = "input.data_source == 'example'",
+          selectInput("example_data", "Select Example Dataset:",
+                      choices = c("Iris" = "iris", "Motor Trends Cars" = "mtcars", "Penguins" = "penguins"))
+        )
+      ),
+      mainPanel(
+        h3("Data Preview"),
+        DTOutput("data_preview"),
+        uiOutput("dataset_info")
+      )
+    )
   ),
-  
-  # data preprocessing
+
   tabPanel("Preprocessing",
-           sidebarLayout(
-             sidebarPanel(
-               h4("Data Cleaning Tools"),
-               checkboxGroupInput("preprocess_steps", "Select Operations:",
-                                  choices = c("Handle Missing Values" = "na",
-                                              "Normalize Features" = "normalize")),
-               
-               conditionalPanel(
-                 condition = "input.preprocess_steps.includes('na')",
-                 selectInput("na_handling", "Missing Value Strategy:",
-                             choices = c("Remove Rows" = "rm_rows",
-                                         "Mean Imputation" = "mean",
-                                         "Median Imputation" = "median"))
-               )
-             ),
-             
-             mainPanel(
-               h3("Processed Data Preview"),
-               DTOutput("processed_data")
-             )
-           )
+    sidebarLayout(
+      sidebarPanel(
+        checkboxGroupInput("preprocess_steps", "Select Preprocessing Steps:",
+                           choices = c("Handle Missing Values" = "na",
+                                       "Normalize Numeric Features" = "normalize")),
+        conditionalPanel(
+          condition = "input.preprocess_steps.includes('na')",
+          selectInput("na_handling", "Missing Value Strategy:",
+                      choices = c("Remove Rows" = "rm_rows", "Mean Imputation" = "mean", "Median Imputation" = "median"))
+        )
+      ),
+      mainPanel(
+        h3("Processed Data Preview"),
+        DTOutput("processed_data")
+      )
+    )
   ),
-  
-  # EDA
+
+  tabPanel("Feature Engineering",
+    sidebarLayout(
+      sidebarPanel(
+        h4("Add New Features"),
+        checkboxGroupInput("feature_steps", "Select Feature Engineering Steps:",
+                           choices = c("Add Text Length Feature" = "textlen",
+                                       "Create Upvote/Comment Ratio" = "ratio"))
+      ),
+      mainPanel(
+        h3("Feature Engineered Data"),
+        DTOutput("featured_data")
+      )
+    )
+  ),
+
   tabPanel("Visualization",
-           sidebarLayout(
-             sidebarPanel(
-               selectInput("plot_type", "Choose Visualization Type:",
-                           choices = c("Scatter Plot" = "scatter",
-                                       "Histogram" = "hist",
-                                       "Box Plot" = "box",
-                                       "Correlation Matrix" = "corr")),
-               uiOutput("plot_params"),
-               sliderInput("plot_size", "Plot Size:",
-                           min = 400, max = 1000, value = 600),
-               downloadButton("download_plot", "Download Plot")
-             ),
-             
-             mainPanel(
-               h3("Data Visualization"),
-               plotOutput("main_viz", height = "auto")
-             )
-           )
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("plot_type", "Plot Type:",
+                    choices = c("Scatter Plot" = "scatter",
+                                "Histogram" = "hist",
+                                "Box Plot" = "box",
+                                "Correlation Matrix" = "corr")),
+        uiOutput("plot_params"),
+        sliderInput("plot_size", "Plot Height (px):", min = 300, max = 1000, value = 500),
+        downloadButton("download_plot", "Download Plot")
+      ),
+      mainPanel(
+        h3("Visualization Output"),
+        plotOutput("main_plot", height = "auto")
+      )
+    )
   )
 )
 
 server <- function(input, output, session) {
-  rv <- reactiveValues(
-    raw_data = NULL,
-    processed_data = NULL
-  )
-  
-  #######optimized for large files
+  rv <- reactiveValues(raw_data = NULL, processed_data = NULL, featured_data = NULL)
+
   observeEvent(input$file_upload, {
     req(input$file_upload)
-    
-    file_path <- input$file_upload$datapath
-    file_ext <- tools::file_ext(input$file_upload$name)
-    
-    rv$raw_data <- switch(file_ext,
-                          "csv" = fread(file_path), #effcient reading specially for csv file
-                          "xls" = readxl::read_excel(file_path),
-                          "xlsx" = readxl::read_excel(file_path),
-                          "json" = jsonlite::fromJSON(file_path),
-                          "rds" = readRDS(file_path),
+    ext <- tools::file_ext(input$file_upload$name)
+    path <- input$file_upload$datapath
+    rv$raw_data <- switch(ext,
+                          csv = fread(path),
+                          xls = read_excel(path),
+                          xlsx = read_excel(path),
+                          json = fromJSON(path),
+                          rds = readRDS(path),
                           NULL)
-    
-    if (is.null(rv$raw_data)) {
-      showNotification("Unsupported file format!", type = "error")
-    }
   })
-  
-  # load example datasets
-  ##### need to change
+
   observeEvent(input$example_data, {
     rv$raw_data <- switch(input$example_data,
-                          "iris" = iris,
-                          "mtcars" = mtcars,
-                          "penguins" = palmerpenguins::penguins)
+                          iris = iris,
+                          mtcars = mtcars,
+                          penguins = palmerpenguins::penguins)
   })
-  
-  # dataset info
+
+  output$data_preview <- renderDT({ req(rv$raw_data); datatable(rv$raw_data) })
+
   output$dataset_info <- renderUI({
     req(input$example_data)
-    desc <- switch(input$example_data,
-                   "iris" = "Measurements of 3 iris species (n = 150)",
-                   "mtcars" = "32 cars' performance specs (1974)",
-                   "penguins" = "Penguin measurements from Palmer Station (n = 344)")
-    HTML(paste0("<div class='alert alert-info'><strong>Dataset Info:</strong> ", desc, "</div>"))
+    info <- switch(input$example_data,
+                   iris = "Iris dataset: 150 flowers with 4 measurements",
+                   mtcars = "Motor Trend Car Road Tests dataset",
+                   penguins = "Palmer Station Penguin data")
+    HTML(paste("<strong>Dataset Info:</strong>", info))
   })
-  
-  # data preview
-  output$data_preview <- renderDT({
-    req(rv$raw_data)
-    datatable(rv$raw_data, options = list(scrollX = TRUE, pageLength = 10))
-  })
-  
-  # preprocessing
+
   observe({
     req(rv$raw_data)
-    data <- rv$raw_data
-    
-    # handle missing values
+    df <- rv$raw_data
+
     if ("na" %in% input$preprocess_steps) {
       if (input$na_handling == "rm_rows") {
-        data <- na.omit(data)
+        df <- na.omit(df)
       } else {
-        data <- data %>%
-          mutate(across(where(is.numeric), ~ ifelse(is.na(.),
-                                                    if (input$na_handling == "mean") mean(., na.rm = TRUE) else median(., na.rm = TRUE),
-                                                    .)))
+        df <- df %>% mutate(across(where(is.numeric), ~ifelse(is.na(.),
+                                                              if (input$na_handling == "mean") mean(., na.rm = TRUE) else median(., na.rm = TRUE), .)))
       }
     }
-    
-    rv$processed_data <- data
+    if ("normalize" %in% input$preprocess_steps) {
+      df <- df %>% mutate(across(where(is.numeric), ~ scale(.) %>% as.vector()))
+    }
+
+    rv$processed_data <- df
   })
-  
-  output$processed_data <- renderDT({
+
+  output$processed_data <- renderDT({ req(rv$processed_data); datatable(rv$processed_data) })
+
+  observe({
     req(rv$processed_data)
-    datatable(rv$processed_data, options = list(scrollX = TRUE, pageLength = 10))
+    df <- rv$processed_data
+
+    if (is.null(df)) return(NULL)
+    if ("textlen" %in% input$feature_steps && "name" %in% colnames(df)) {
+      df$text_length <- nchar(as.character(df$name))
+    }
+    if ("ratio" %in% input$feature_steps && all(c("upvotes", "comments") %in% colnames(df))) {
+      df$upvote_comment_ratio <- df$upvotes / (df$comments + 1)
+    }
+
+    rv$featured_data <- df
   })
-  
-  # visualization UI
+
+  output$featured_data <- renderDT({ req(rv$featured_data); datatable(rv$featured_data) })
+
   output$plot_params <- renderUI({
     req(rv$processed_data)
     vars <- names(rv$processed_data)
-    
     switch(input$plot_type,
-           "scatter" = tagList(
-             selectInput("x_var", "X Variable:", vars),
-             selectInput("y_var", "Y Variable:", vars)
-           ),
-           "hist" = selectInput("hist_var", "Variable:", vars),
-           "box" = selectInput("box_var", "Variable:", vars)
-    )
+           scatter = tagList(selectInput("xvar", "X Variable", vars), selectInput("yvar", "Y Variable", vars)),
+           hist = selectInput("histvar", "Variable", vars),
+           box = selectInput("boxvar", "Variable", vars),
+           NULL)
   })
-  
-  # visualization render plot
-  output$main_viz <- renderPlot({
+
+  output$main_plot <- renderPlot({
     req(rv$processed_data)
-    data <- rv$processed_data
-    
+    df <- rv$processed_data
     if (input$plot_type == "scatter") {
-      req(input$x_var, input$y_var)
-      ggplot(data, aes_string(x = input$x_var, y = input$y_var)) +
-        geom_point() + theme_minimal()
-      
+      ggplot(df, aes_string(x = input$xvar, y = input$yvar)) + geom_point() + theme_minimal()
     } else if (input$plot_type == "hist") {
-      req(input$hist_var)
-      ggplot(data, aes_string(x = input$hist_var)) +
-        geom_histogram(fill = "skyblue", bins = 30) + theme_minimal()
+      ggplot(df, aes_string(x = input$histvar)) + geom_histogram(bins = 30, fill = "steelblue") + theme_minimal()
+    } else if (input$plot_type == "box") {
+      ggplot(df, aes_string(y = input$boxvar)) + geom_boxplot(fill = "orange") + theme_minimal()
+    } else if (input$plot_type == "corr") {
+      num_df <- df %>% select(where(is.numeric))
+      cmat <- cor(num_df, use = "complete.obs")
+      corrplot(cmat, method = "circle")
     }
-  }, height = function() { input$plot_size })
+  }, height = function() input$plot_size)
+
+  output$download_plot <- downloadHandler(
+    filename = function() paste0("plot_", Sys.Date(), ".png"),
+    content = function(file) {
+      ggsave(file, plot = last_plot(), width = 8, height = 6)
+    }
+  )
 }
 
 shinyApp(ui, server)
+
