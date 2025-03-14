@@ -14,18 +14,19 @@ Perform data cleaning, handle outliers, engineer features, and create interactiv
 
 ### Repository Structure
 #### Data Files
-- **AB_NYC_2019.csv**: A big complex dataset to test on, which is from New York City Airbnb Open Data. Original dataset from [[source](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data)]  
+- **AB_NYC_2019.csv**: A big complex dataset to test on, which is from New York City Airbnb Open Data. Original dataset from [[source](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data)]
+- **Sample_Data.xlsx** Made up file for different type of file testing
 
 #### App file
 - **app.R**
 - **data analysis suite.R**
 - **app_314.R**
-- **please refer ### for final**
+- **please refer app_314.R for final**
 
 #### Report file
 - **5243_Project 2_Team6.pdf**
 - **5243_Project 2_Team6 - Google Docs.pdf**
-- **please refer ### for final**
+- **please refer 5243_Project 2_Team6 - Google Docs.pdf for final**
 
 ### Project Objectives
 1. Data cleaning and preprocessing:
