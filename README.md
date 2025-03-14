@@ -2,13 +2,15 @@
 # BlueStats: A data analysis app using R shiny
 
 ## Project Overview
-This project analyzes [briefly describe dataset/objective]. Our focus is on [main objectives, e.g., exploring patterns, predictive modeling, etc.] using [specific techniques/methods].
+This is an class project for Columbia University project for GRSTAT5243. 
+This app lets you easily upload, explore, and analyze datasets. 
+Perform data cleaning, handle outliers, engineer features, and create interactive visualizations—all in one place.
 
 ### Collaborators
 - Ziyue Gao (ziyuegao0302)  
 - Keito Taketomi (kt2849)  
 - Anqi Wu (Owner of this repo, WAWQAQMAKABAKA)  
-- [Yixin Xiao] (yx2888)  
+- Yixin Xiao (yx2888)  
 
 ### Repository Structure
 #### Data Files
