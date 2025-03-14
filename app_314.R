@@ -375,16 +375,16 @@ server <- function(input, output, session) {
           }
           
           # Handle categorical columns (convert to "Unknown")
-          cat_cols <- names(data)[sapply(data, is.character) | sapply(data, is.factor)]
-          if (length(cat_cols) > 0) {
-            data[cat_cols] <- data[cat_cols] %>%
-              mutate(across(
-                everything(),
-                ~ replace_na(., "Unknown")
-              ))
-            changes_log <- append(changes_log, 
-                                  paste("Converted NAs to 'Unknown' in", length(cat_cols), "categorical columns."))
-          }
+          # Handle categorical columns (convert to "Unknown")
+cat_cols <- names(data)[sapply(data, is.character) | sapply(data, is.factor)]
+if (length(cat_cols) > 0) {
+  data[cat_cols] <- data[cat_cols] %>%
+    mutate(across(
+      everything(),
+      ~ replace_na(as.character(.), "Unknown")  # Convert factor to character before replacing NA
+    ))
+}
+
         }
       }
     }
