@@ -48,7 +48,7 @@ ui <- navbarPage(
                tags$li("Finally, explore 'Visualization & EDA' to filter data, view summary stats, generate plots, and download them.")
              ),
              h3("Project Information:"),
-             p(strong("Course: "), "GRSTAT5243 - Statistical Computing for Data Science"),
+             p(strong("Course: "), "GRSTAT5243 - Applied Data Science"),
              p(strong("Institution: "), "Columbia University"),
              p(strong("Team: "), "Team 6"),
              hr(),
