@@ -1,15 +1,14 @@
 # 5243project2_team6
-
-# [BlueStats]: [A data analysis app using R shiny]
+# BlueStats: A data analysis app using R shiny
 
 ## Project Overview
 This project analyzes [briefly describe dataset/objective]. Our focus is on [main objectives, e.g., exploring patterns, predictive modeling, etc.] using [specific techniques/methods].
 
 ### Collaborators
-- [Ziyue Gao] ([ziyuegao0302])  
-- [Keito Taketomi] ([kt2849])  
-- [Anqi Wu] (Owner of this repo,[WAWQAQMAKABAKA])  
-- [Yixin Xiao] ([yx2888])  
+- Ziyue Gao (ziyuegao0302)  
+- Keito Taketomi (kt2849)  
+- Anqi Wu (Owner of this repo, WAWQAQMAKABAKA)  
+- [Yixin Xiao] (yx2888)  
 
 ### Repository Structure
 #### Data Files
