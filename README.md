@@ -26,7 +26,8 @@ Perform data cleaning, handle outliers, engineer features, and create interactiv
 #### Report file
 - **5243_Project 2_Team6.pdf**
 - **5243_Project 2_Team6 - Google Docs.pdf**
-- **please refer 5243_Project 2_Team6 - Google Docs.pdf for final**
+- **5243_Project 2_Team6_final.pdf**
+- **please refer 5243_Project 2_Team6_final.pdf for final**
 
 ### Project Objectives
 1. Data cleaning and preprocessing:
